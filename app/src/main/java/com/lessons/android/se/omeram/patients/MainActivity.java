@@ -27,7 +27,7 @@ import com.afollestad.materialdialogs.MaterialDialog;
 public class MainActivity extends AppCompatActivity {
 
     private static String TAG = MainActivity.class.getSimpleName();
-
+    // Lior Sync
     // Database creation sql statement
     private static final String DATABASE_PATIENT_CREATE = "CREATE TABLE IF NOT EXISTS " + Constants.TABLE_PATIENTS + " ("
             + Constants._ID + " INTEGER PRIMARY KEY, "
