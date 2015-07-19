@@ -7,4 +7,19 @@
     <string name="add">Add</string>
     <string name="dialog_title">Add a patient</string>
     <string name="dialog_test">Add test</string>
+    <string name="title_activity_login_page">LoginPage</string>
+    <string name="userNameHint">User Name</string>
+    <string name="passwordHint">Password</string>
+    <string name="loginButtonText">Login</string>
+    <string name="Admin">Admin</string>
+    <string name="LoginPage">Login Page</string>
+    <string name="InputMessage">You Must Enter A User Name And Password</string>
+    <string name="connectionProblem">Connection Problem</string>
+    <string name="incorrectInput">The User Name Or Password Are Wrong</string>
+    <string name="noInput">Must Enter A User Name And Password</string>
+
+
+
+
+
 </resources>
