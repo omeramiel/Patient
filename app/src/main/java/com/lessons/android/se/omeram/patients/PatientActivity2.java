@@ -291,8 +291,6 @@ public class PatientActivity2 extends AppCompatActivity {
                 }).build();
 
 
-        //mCursor = getTestCursor(table, FROM, null, ORDER_BY_DATE);
-        //Log.e(TAG, "mCursor: " + mCursor.getCount());
 
 
 

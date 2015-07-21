@@ -25,6 +25,7 @@
     <string name="graphs">Display Graphs</string>
     <string name="graph_dialog_title">Select dates range..</string>
     <string name="generate">Generate</string>
+    <string name="wait">Please Wait</string>
 
 
 </resources>

@@ -1,7 +1,6 @@
 package com.lessons.android.se.omeram.patients;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -14,6 +13,7 @@ import cn.pedant.SweetAlert.SweetAlertDialog;
 public class LoginPage extends Activity {
     private EditText userNameET,passwordET;
     private SweetAlertDialog wrongPasswordDialog;
+    private UsersBL usersBL;
 
 
     @Override
@@ -61,16 +61,9 @@ public class LoginPage extends Activity {
         {
             int userPassword = Integer.parseInt(passwordET.getText().toString());
 
-            //if(userNameFromET.equals("carlos")&& userPassword ==123456 )
-            {
-                Intent i=new Intent(this ,MainActivity.class);
-                startActivity(i);
-            }
-            //else
-            {
-                wrongPasswordAlertInit(getString(R.string.incorrectInput));
 
-            }
+            usersBL = new UsersBL();
+            usersBL.getBusinessID(this, this, userPassword, userNameFromET);
         }
 
     }
@@ -82,7 +75,6 @@ public class LoginPage extends Activity {
         wrongPasswordDialog.setContentText(message);
         wrongPasswordDialog.setCancelable(true);
         wrongPasswordDialog.show();
-
-
     }
+
 }
