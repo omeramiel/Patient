@@ -20,6 +20,11 @@
     <string name="next">next</string>
     <string name="set">set</string>
     <string name="date_dialog_title">Select a date..</string>
+    <string name="sort">Sort By..</string>
+    <string name="sort2">Sort</string>
+    <string name="graphs">Display Graphs</string>
+    <string name="graph_dialog_title">Select dates range..</string>
+    <string name="generate">Generate</string>
 
 
 </resources>

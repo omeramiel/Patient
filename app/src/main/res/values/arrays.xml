@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="sort">
+        <item>Date</item>
+        <item>Grade</item>
+    </string-array>
+
+
+    <string-array name="questions">
+        <item>Q.1</item>
+        <item>Q.2</item>
+        <item>Q.3</item>
+        <item>Q.4</item>
+        <item>Q.5</item>
+        <item>Q.6</item>
+        <item>Q.7</item>
+        <item>Q.8</item>
+        <item>Q.9</item>
+        <item>Q.10</item>
+    </string-array>
+
+</resources>

@@ -1,6 +1,7 @@
 package com.lessons.android.se.omeram.patients;
 
 import android.content.ContentValues;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -8,6 +9,8 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.DatePicker;
@@ -17,6 +20,7 @@ import android.widget.TextView;
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 
 /**
@@ -25,6 +29,12 @@ import java.util.Calendar;
 public class PatientActivity2 extends AppCompatActivity {
 
     private static String TAG = PatientActivity2.class.getSimpleName();
+
+    private String[] FROM = {Constants._ID, Constants.COLUMN_YEAR, Constants.COLUMN_MONTH, Constants.COLUMN_DAY, Constants.COLUMN_GRADE};
+    private String ORDER_BY_DATE = "CAST(" + Constants.COLUMN_YEAR + " AS int), CAST(" + Constants.COLUMN_MONTH + " AS int), CAST(" + Constants.COLUMN_DAY + " AS int) ASC";
+    private String ORDER_BY_GRADE =Constants.COLUMN_GRADE + " ASC";
+
+    private MenuItem menuItem;
 
     private SQLiteDatabase db;
     private PatientDbHelper dbHelper;
@@ -41,10 +51,10 @@ public class PatientActivity2 extends AppCompatActivity {
     int mMonth = c.get(Calendar.MONTH);
     int mDay = c.get(Calendar.DAY_OF_MONTH);
 
-    private String[] questions;
     private Integer[] answers;
     private DatePicker datePicker;
     private String table;
+
 
 
     @Override
@@ -59,7 +69,7 @@ public class PatientActivity2 extends AppCompatActivity {
         height = getIntent().getIntExtra(Constants.COLUMN_HEIGHT, 0);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setTitle(name + "'s personal page");
+        toolbar.setTitle(name + "'s tests");
         setSupportActionBar(toolbar);
 
         TextView patientAge = (TextView) findViewById(R.id.personalAge);
@@ -127,10 +137,7 @@ public class PatientActivity2 extends AppCompatActivity {
         ListView listView = (ListView) findViewById(R.id.testList);
         listView.setLongClickable(true);
 
-        String[] from = {Constants._ID, Constants.COLUMN_YEAR, Constants.COLUMN_MONTH, Constants.COLUMN_DAY, Constants.COLUMN_GRADE};
-        String order = Constants.COLUMN_YEAR + ", " + Constants.COLUMN_MONTH + ", " + Constants.COLUMN_DAY + " ASC";
-
-        mCursor = getTestCursor(table, from, null, order);
+        mCursor = getTestCursor(table, FROM, null, ORDER_BY_DATE);
 
         testCursorAdapter = new TestCursorAdapter(this, mCursor);
         listView.setAdapter(testCursorAdapter);
@@ -155,7 +162,6 @@ public class PatientActivity2 extends AppCompatActivity {
 
                     @Override
                     public void onPositive(MaterialDialog dialog) {
-
                         showInputDialog();
                     }
 
@@ -176,7 +182,6 @@ public class PatientActivity2 extends AppCompatActivity {
                 mYear = year;
                 mMonth = monthOfYear;
                 mDay = dayOfMonth;
-                Log.e(TAG, date);
             }
         });
 
@@ -186,13 +191,12 @@ public class PatientActivity2 extends AppCompatActivity {
     //new test dialog
     private void showInputDialog() {
 
-        questions = new String[10];
         answers = new Integer[0];
         insertTestQuery();
 
         new MaterialDialog.Builder(this)
                 .title("Add test on " + date)
-                .items(questions)
+                .items(R.array.questions)
                 .positiveText(R.string.set)
                 .itemsCallbackMultiChoice(answers, new MaterialDialog.ListCallbackMultiChoice() {
                     @Override
@@ -204,7 +208,12 @@ public class PatientActivity2 extends AppCompatActivity {
                             count++;
                             updateTestQuestion(aWhich + 1, 1);
                         }
-                        updateTestGrade(count*10);
+                        updateTestGrade(count * 10);
+
+                        mCursor = getTestCursor(table, FROM, null, ORDER_BY_DATE);
+                        testCursorAdapter.changeCursor(mCursor);
+                        testCursorAdapter.notifyDataSetChanged();
+
                         return true;
                     }
 
@@ -212,12 +221,124 @@ public class PatientActivity2 extends AppCompatActivity {
                 .show();
     }
 
+    //sort dialog
+    private void showSortDialog() {
+        new MaterialDialog.Builder(this)
+                .title("Sort By..")
+                .items(R.array.sort)
+                .itemsCallbackSingleChoice(0, new MaterialDialog.ListCallbackSingleChoice() {
+                    @Override
+                    public boolean onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {
+
+                        switch (which) {
+                            case 0:
+                                mCursor = getTestCursor(table, FROM, null, ORDER_BY_DATE);
+                                break;
+                            case 1:
+                                mCursor = getTestCursor(table, FROM, null, ORDER_BY_GRADE);
+                                break;
+                        }
+                        testCursorAdapter.changeCursor(mCursor);
+                        testCursorAdapter.notifyDataSetChanged();
+
+                        return true; // allow selection
+                    }
+                })
+                .positiveText(R.string.sort2)
+                .show();
+    }
+
+    //graph dialog
+    private void showGraphDialog() {
+        MaterialDialog dialog = new MaterialDialog.Builder(this)
+                .title(R.string.graph_dialog_title)
+                .customView(R.layout.dialog_graphs, true)
+                .positiveText(R.string.generate)
+                .negativeText(android.R.string.cancel)
+                .callback(new MaterialDialog.ButtonCallback() {
+
+                    @Override
+                    public void onPositive(MaterialDialog dialog) {
+
+                        ArrayList<String> years = new ArrayList<String>();
+                        ArrayList<String> months = new ArrayList<String>();
+                        ArrayList<String> days = new ArrayList<String>();
+                        ArrayList<String> grades = new ArrayList<String>();
+
+                        mCursor = getTestCursor(table, FROM, null, ORDER_BY_DATE);
+                        Log.e(TAG, "mCursor: " + mCursor.toString());
+
+                        while (mCursor.moveToNext()) {
+                            years.add(mCursor.getString(1));
+                            months.add(mCursor.getString(2));
+                            days.add(mCursor.getString(3));
+                            grades.add(mCursor.getString(4));
+                        }
+
+                        Log.e(TAG, "years.size(): " + years.size());
+
+                        Intent intentGraph = new Intent(getApplicationContext(), GraphActivity.class);
+                        intentGraph.putExtra(Constants.COLUMN_YEAR, years);
+                        intentGraph.putExtra(Constants.COLUMN_MONTH, months);
+                        intentGraph.putExtra(Constants.COLUMN_DAY, days);
+                        intentGraph.putExtra(Constants.COLUMN_GRADE, grades);
+                        startActivity(intentGraph);
+                        //validateDates(start, end);
+                    }
+
+                    @Override
+                    public void onNegative(MaterialDialog dialog) {}
+                }).build();
+
+
+        //mCursor = getTestCursor(table, FROM, null, ORDER_BY_DATE);
+        //Log.e(TAG, "mCursor: " + mCursor.getCount());
+
+
+
+
+        dialog.show();
+    }
+
+/*        Button startDate = (Button) dialog.getCustomView().findViewById(R.id.buttonStartDate);
+        Button endDate = (Button) dialog.getCustomView().findViewById(R.id.buttonEndDate);
+
+        start = new int[3];
+        end = new int[3];
+
+        startDate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showDateDialog();
+                if (positiveDate) {
+                    positiveDate = false;
+                    start[0] = mYear;
+                    start[1] = mMonth;
+                    start[2] = mDay;
+                }
+            }
+        });
+
+        endDate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showDateDialog();
+                if (positiveDate) {
+                    positiveDate = false;
+                    end[0] = mYear;
+                    end[1] = mMonth;
+                    end[2] = mDay;
+                }
+            }
+        });*/
+
+
+
     //get test table cursor
-    private Cursor getTestCursor(final String table,final String[] from,  final String where, final String order) {
+    private Cursor getTestCursor(final String table, final String[] from,  final String where, final String order) {
         return db.query(table, from, where, null, null, null, order);
     }
 
-    //update the query (1..10, 0..1)
     private void insertTestQuery() {
         ContentValues values = new ContentValues();
         values.put(Constants.COLUMN_YEAR, mYear);
@@ -226,7 +347,6 @@ public class PatientActivity2 extends AppCompatActivity {
         db.insertWithOnConflict(table, null, values, SQLiteDatabase.CONFLICT_REPLACE);
     }
 
-    //update the query (1..10, 0..1)
     private void updateTestQuestion(final int question, final int answer) {
         String where = Constants.COLUMN_YEAR + " = ? AND " + Constants.COLUMN_MONTH + " = ? AND "  + Constants.COLUMN_DAY + " = ?";
         ContentValues values = new ContentValues();
@@ -235,7 +355,6 @@ public class PatientActivity2 extends AppCompatActivity {
         db.update(table, values, where, args);
     }
 
-    //update the query (1..10, 0..1)
     private void updateTestGrade(final int grade) {
         ContentValues values = new ContentValues();
         values.put(Constants.COLUMN_GRADE, grade);
@@ -268,6 +387,39 @@ public class PatientActivity2 extends AppCompatActivity {
                 return Constants.COLUMN_ANSWER_TEN;
         }
         return null;
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_patient, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+
+        int id = item.getItemId();
+        switch (id) {
+
+            case R.id.action_sort:
+                showSortDialog();
+                return true;
+
+            case R.id.action_graphs:
+                showGraphDialog();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        menuItem = menu.findItem(R.id.action_sort);
+        return super.onPrepareOptionsMenu(menu);
     }
 
 }

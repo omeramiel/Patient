@@ -26,49 +26,25 @@
         app:pressedTranslationZ="12dp"
         app:borderWidth="0dp"/>
 
-    <ListView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/testList"
-        android:choiceMode="multipleChoice"
-        android:layout_below="@+id/toolbar"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginTop="156dp" />
-
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/toolbar"
-        android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:id="@+id/relativeLayout"
-        android:layout_above="@+id/fabAddTest"
-        android:layout_marginBottom="300dp">
-
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/imageView3"
-            android:src="@drawable/ic_patient"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentBottom="true" />
+        android:layout_below="@+id/toolbar"
+        android:layout_above="@+id/textView">
 
         <TextView
             android:id="@+id/personalWeight"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="#FFD068BA"
+            android:textColor="#ff436fa4"
             android:textSize="14sp"
             android:text="Weight:"
-            android:layout_alignParentBottom="true"
+            android:textStyle="bold|italic"
+            android:layout_centerVertical="true"
             android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:textStyle="bold|italic" />
+            android:layout_alignParentStart="true" />
 
         <TextView
             android:id="@+id/personalAge"
@@ -86,15 +62,52 @@
             android:id="@+id/personalHeight"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="#ffd068ba"
+            android:textColor="#ff436fa4"
             android:textSize="14sp"
             android:text="Height:"
-            android:layout_above="@+id/personalWeight"
+            android:textStyle="bold|italic"
+            android:layout_below="@+id/personalWeight"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
-            android:textStyle="bold|italic" />
+            android:layout_marginTop="20dp" />
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/imageView3"
+            android:src="@drawable/ic_patient"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentBottom="true"
+            android:layout_toRightOf="@+id/personalWeight"
+            android:layout_toEndOf="@+id/personalWeight" />
 
     </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/relativeLayout2"
+        android:layout_below="@+id/textView">
+
+        <ListView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/testList"
+            android:choiceMode="multipleChoice"
+            android:layout_above="@+id/fabAddTest"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" />
+    </RelativeLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Test List"
+        android:id="@+id/textView"
+        android:textColor="#ff000000"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true" />
 
 
 </RelativeLayout>
