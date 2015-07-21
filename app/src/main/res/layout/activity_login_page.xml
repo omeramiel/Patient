@@ -14,26 +14,24 @@
             android:focusable="true"
             android:textColorHighlight="#ff7eff15"
             android:textColorHint="#ff606fff"
-            android:layout_marginTop="46dp"
+            android:textSize="30dp"
+            android:gravity="left"
+            android:textColor="#ff000000"
             android:layout_below="@+id/imageView"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
             android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true"
-            android:textSize="30dp"
-            android:gravity="left"
-            android:textColor="#ff000000" />
+            android:layout_alignParentEnd="true" />
 
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="300dp"
             android:id="@+id/imageView"
             android:scaleType="fitXY"
-            android:src="@drawable/login"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true" />
+            android:src="@drawable/doctor_icon"
+            android:layout_marginTop="42dp"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true" />
 
         <EditText
             android:layout_width="wrap_content"
@@ -44,26 +42,35 @@
             android:layout_below="@+id/userNameET"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
-            android:layout_alignRight="@+id/userNameET"
-            android:layout_alignEnd="@+id/userNameET"
             android:textColorHint="#ff606fff"
             android:hint="@string/passwordHint"
-            android:layout_alignParentRight="true"
             android:gravity="left"
             android:textSize="30dp"
-            android:layout_alignParentEnd="true"
             android:textColor="#FF000000"
-            android:password="true" />
+            android:password="true"
+            android:layout_alignRight="@+id/userNameET"
+            android:layout_alignEnd="@+id/userNameET" />
 
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/loginButtonText"
             android:id="@+id/loginButton"
-            android:layout_alignParentBottom="true"
             android:onClick="loginClicked"
-            android:textSize="30dp"
+            android:textSize="20sp"
+            android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="Welcome Doc!"
+            android:id="@+id/textView2"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:textColor="@color/material_blue_grey_80"
+            android:textSize="35sp" />
 
 
     </RelativeLayout>
