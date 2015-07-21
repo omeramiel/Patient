@@ -14,6 +14,7 @@ import cn.pedant.SweetAlert.SweetAlertDialog;
 public class LoginPage extends Activity {
     private EditText userNameET,passwordET;
     private SweetAlertDialog wrongPasswordDialog;
+    private UsersBL usersBL;
 
 
     @Override
@@ -61,16 +62,9 @@ public class LoginPage extends Activity {
         {
             int userPassword = Integer.parseInt(passwordET.getText().toString());
 
-            //if(userNameFromET.equals("carlos")&& userPassword ==123456 )
-            {
-                Intent i=new Intent(this ,MainActivity.class);
-                startActivity(i);
-            }
-            //else
-            {
-                wrongPasswordAlertInit(getString(R.string.incorrectInput));
 
-            }
+                usersBL = new UsersBL();
+                usersBL.getBusinessID(this, this, userPassword, userNameFromET);
         }
 
     }
@@ -82,7 +76,26 @@ public class LoginPage extends Activity {
         wrongPasswordDialog.setContentText(message);
         wrongPasswordDialog.setCancelable(true);
         wrongPasswordDialog.show();
+    }
 
 
+    public void Graph(View view)
+    {
+        Intent graphDisplayIntent=new Intent(this ,graph.class);
+        String startDay,startMonth,startYear;
+        String endDay,endMonth,endYear;
+        startDay="01";
+        startMonth="10";
+        startYear="1980";
+        endDay="02";
+        endMonth="11";
+        endYear="1980";
+        graphDisplayIntent.putExtra("startDay", startDay);
+        graphDisplayIntent.putExtra("startMonth", startMonth);
+        graphDisplayIntent.putExtra("startYear",startYear);
+        graphDisplayIntent.putExtra("endDay", endDay);
+        graphDisplayIntent.putExtra("endMonth", endMonth);
+        graphDisplayIntent.putExtra("endYear", endYear);
+        startActivity(graphDisplayIntent);
     }
 }
