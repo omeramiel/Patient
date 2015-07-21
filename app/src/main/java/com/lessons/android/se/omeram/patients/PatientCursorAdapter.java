@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CursorAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 /**
@@ -33,11 +34,13 @@ public class PatientCursorAdapter extends CursorAdapter{
         TextView patientAge = (TextView) view.findViewById(R.id.testDate);
         TextView patientWeight = (TextView) view.findViewById(R.id.patientWeight);
         TextView patientHeight = (TextView) view.findViewById(R.id.patientHeight);
+        ImageView patientPicture = (ImageView) view.findViewById(R.id.imageViewPatient);
 
         patientId.setText(cursor.getString(0));
         patientName.setText(cursor.getString(1));
         patientAge.setText("Age: " + cursor.getString(2));
         patientWeight.setText("Weight: " + cursor.getString(3));
         patientHeight.setText("Height: " + cursor.getString(4));
+        //patientPicture.setImageResource();
     }
 }

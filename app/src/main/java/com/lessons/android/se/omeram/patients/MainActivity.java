@@ -1,10 +1,13 @@
 package com.lessons.android.se.omeram.patients;
 
+import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.ActionBar;
@@ -18,11 +21,16 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.NumberPicker;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
+
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -47,9 +55,12 @@ public class MainActivity extends AppCompatActivity {
     private boolean isSearchOpened = false;
     private EditText searchEditText, idInput, nameInput;
     private NumberPicker ageInput, weightInput, heightInput;
+    private ImageView imageViewPatient;
     private PatientCursorAdapter patientCursorAdapter;
     private Cursor mCursor;
     private View positive;
+    private static final int REQUEST_CODE = 1;
+    private Bitmap bitmap;
 
     private FloatingActionButton fabRemove;
     private boolean longPressed;
@@ -193,6 +204,17 @@ public class MainActivity extends AppCompatActivity {
         ageInput = (NumberPicker) dialog.getCustomView().findViewById(R.id.testDate);
         weightInput = (NumberPicker) dialog.getCustomView().findViewById(R.id.patientWeight);
         heightInput = (NumberPicker) dialog.getCustomView().findViewById(R.id.patientHeight);
+        imageViewPatient = (ImageView) dialog.getCustomView().findViewById(R.id.imageViewPatient);
+        imageViewPatient.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent();
+                intent.setType("image/*");
+                intent.setAction(Intent.ACTION_GET_CONTENT);
+                intent.addCategory(Intent.CATEGORY_OPENABLE);
+                startActivityForResult(intent, REQUEST_CODE);
+            }
+        });
 
         ageInput.setMinValue(16);
         ageInput.setMaxValue(99);
@@ -227,6 +249,35 @@ public class MainActivity extends AppCompatActivity {
 
         dialog.show();
     }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        InputStream stream = null;
+        if (requestCode == REQUEST_CODE && resultCode == Activity.RESULT_OK)
+            try {
+                // recyle unused bitmaps
+                if (bitmap != null) {
+                    bitmap.recycle();
+                }
+                stream = getContentResolver().openInputStream(data.getData());
+                bitmap = BitmapFactory.decodeStream(stream);
+
+                imageViewPatient.setImageBitmap(bitmap);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } finally {
+                if (stream != null)
+                    try {
+                        stream.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+             }
+
+    }
+
+
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
