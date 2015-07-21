@@ -19,6 +19,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.NumberPicker;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -31,19 +32,27 @@ public class MainActivity extends AppCompatActivity {
     // Database creation sql statement
     private static final String DATABASE_PATIENT_CREATE = "CREATE TABLE IF NOT EXISTS " + Constants.TABLE_PATIENTS + " ("
             + Constants._ID + " INTEGER PRIMARY KEY, "
-            + Constants.COLUMN_NAME + " TEXT NOT NULL);";
+            + Constants.COLUMN_NAME + " TEXT NOT NULL, "
+            + Constants.COLUMN_AGE + " INTEGER NOT NULL, "
+            + Constants.COLUMN_WEIGHT + " INTEGER NOT NULL, "
+            + Constants.COLUMN_HEIGHT + " INTEGER NOT NULL"
+            + ");";
 
     private PatientDbHelper dbHelper;
-    private static String[] FROM = {Constants._ID, Constants.COLUMN_NAME};
+    private static String[] FROM = {Constants._ID, Constants.COLUMN_NAME, Constants.COLUMN_AGE, Constants.COLUMN_WEIGHT, Constants.COLUMN_HEIGHT};
     private static String ORDER_BY = Constants._ID + " ASC";
     private SQLiteDatabase db;
 
     private MenuItem menuItem;
     private boolean isSearchOpened = false;
     private EditText searchEditText, idInput, nameInput;
+    private NumberPicker ageInput, weightInput, heightInput;
     private PatientCursorAdapter patientCursorAdapter;
     private Cursor mCursor;
     private View positive;
+
+    private FloatingActionButton fabRemove;
+    private boolean longPressed;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,6 +77,7 @@ public class MainActivity extends AppCompatActivity {
     private void showEvents() {
         dbHelper = new PatientDbHelper(this, DATABASE_PATIENT_CREATE, Constants.TABLE_PATIENTS);
         ListView listView = (ListView) findViewById(R.id.patientList);
+        listView.setLongClickable(true);
         db = dbHelper.getWritableDatabase();
 
         mCursor = getEvents();
@@ -79,22 +89,70 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intentPatient = new Intent(getApplicationContext(), PatientActivity.class);
+                Intent intentPatient = new Intent(getApplicationContext(), PatientActivity2.class);
                 Cursor cursor = (Cursor) patientCursorAdapter.getItem(position);
-                intentPatient.putExtra(Constants.ID, cursor.getInt(0));
-                intentPatient.putExtra(Constants.NAME, cursor.getString(1));
+                intentPatient.putExtra(Constants.COLUMN_ID, cursor.getString(0));
+                intentPatient.putExtra(Constants.COLUMN_NAME, cursor.getString(1));
+                intentPatient.putExtra(Constants.COLUMN_AGE, cursor.getInt(2));
+                intentPatient.putExtra(Constants.COLUMN_WEIGHT, cursor.getInt(3));
+                intentPatient.putExtra(Constants.COLUMN_HEIGHT, cursor.getInt(4));
                 startActivity(intentPatient);
             }
         });
+
+        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+
+            public boolean onItemLongClick(AdapterView<?> arg0, View view, final int position, long id) {
+
+
+                final Cursor cursor = (Cursor) patientCursorAdapter.getItem(position);
+
+                fabRemove = (FloatingActionButton) findViewById(R.id.fabRemovePatient);
+                updateView();
+
+                fabRemove.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        fabRemove.setVisibility(View.INVISIBLE);
+                        longPressed = false;
+
+                        removeQuery(cursor.getString(0));
+
+                        mCursor = getEvents();
+                        patientCursorAdapter.changeCursor(mCursor);
+                        patientCursorAdapter.notifyDataSetChanged();
+
+                    }
+                });
+
+                return true;
+            }
+        });
+
+    }
+
+    private void removeQuery(String id) {
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        db.execSQL("DELETE FROM " + Constants.TABLE_PATIENTS + " WHERE " + Constants._ID + "='" + id + "'");
+    }
+
+    private void updateView() {
+        if (!longPressed) {
+            fabRemove.setVisibility(View.VISIBLE);
+            longPressed = true;
+        }
     }
 
     //insert new patient to db
-    private void insertQuery(String id, String name) {
+    private void insertQuery(String id, String name, int age, int weight, int height) {
         if (!id.isEmpty() && !name.isEmpty()) {
             SQLiteDatabase db = dbHelper.getWritableDatabase();
             ContentValues values = new ContentValues();
             values.put(Constants._ID, id);
             values.put(Constants.COLUMN_NAME, name);
+            values.put(Constants.COLUMN_AGE, age);
+            values.put(Constants.COLUMN_WEIGHT, weight);
+            values.put(Constants.COLUMN_HEIGHT, height);
             db.insertWithOnConflict(Constants.TABLE_PATIENTS, null, values, SQLiteDatabase.CONFLICT_REPLACE);
         }
     }
@@ -115,7 +173,11 @@ public class MainActivity extends AppCompatActivity {
                     
                     @Override
                     public void onPositive(MaterialDialog dialog) {
-                        insertQuery(idInput.getText().toString(), nameInput.getText().toString());
+                        insertQuery(idInput.getText().toString(),
+                                nameInput.getText().toString(),
+                                ageInput.getValue(),
+                                weightInput.getValue(),
+                                heightInput.getValue());
                         mCursor = getEvents();
                         patientCursorAdapter.changeCursor(mCursor);
                         patientCursorAdapter.notifyDataSetChanged();
@@ -126,8 +188,19 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }).build();
         
-        idInput = (EditText) dialog.getCustomView().findViewById(R.id.patientId);
+        idInput = (EditText) dialog.getCustomView().findViewById(R.id.testId);
         nameInput = (EditText) dialog.getCustomView().findViewById(R.id.patientName);
+        ageInput = (NumberPicker) dialog.getCustomView().findViewById(R.id.testDate);
+        weightInput = (NumberPicker) dialog.getCustomView().findViewById(R.id.patientWeight);
+        heightInput = (NumberPicker) dialog.getCustomView().findViewById(R.id.patientHeight);
+
+        ageInput.setMinValue(16);
+        ageInput.setMaxValue(99);
+        weightInput.setMinValue(1);
+        weightInput.setMaxValue(200);
+        heightInput.setMinValue(40);
+        heightInput.setMaxValue(250);
+
         positive = dialog.getActionButton(DialogAction.POSITIVE);
         positive.setEnabled(false);
 
@@ -260,6 +333,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
+
         if (isSearchOpened) {
             handleMenuSearch();
             mCursor = getEvents();
@@ -267,6 +341,13 @@ public class MainActivity extends AppCompatActivity {
             patientCursorAdapter.notifyDataSetChanged();
             return;
         }
+
+        if (longPressed) {
+            fabRemove.setVisibility(View.INVISIBLE);
+            longPressed = false;
+            return;
+        }
+
         super.onBackPressed();
     }
 
@@ -277,5 +358,7 @@ public class MainActivity extends AppCompatActivity {
         if (dbHelper != null)
             dbHelper.closeDB();
     }
+
+
 
 }

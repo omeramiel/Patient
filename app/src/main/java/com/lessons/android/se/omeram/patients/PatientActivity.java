@@ -8,7 +8,6 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
-import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.Toast;
 
@@ -44,8 +43,7 @@ public class PatientActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_patient);
 
-        //id = String.valueOf(getIntent().getIntExtra(Constants.ID, -1));
-        name = getIntent().getStringExtra(Constants.NAME).trim();
+        name = getIntent().getStringExtra(Constants.COLUMN_NAME).trim();
         date = setDate(mYear, mMonth, mDay);
         table = setTableName(name, mYear, mMonth, mDay);
 
@@ -70,24 +68,18 @@ public class PatientActivity extends AppCompatActivity {
             }
         });
 
-        Button buttonAverage = (Button) findViewById(R.id.buttonAverage);
+/*        Button buttonAverage = (Button) findViewById(R.id.buttonAverage);
         buttonAverage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 initTable(table);
-                Cursor cursor = getEvents(table, Constants.COLUMN_ANSWER + " = " + String.valueOf(1));
+                Cursor cursor = getEvents(table, Constants.COLUMN_ANSWER_ONE + " = " + String.valueOf(1));
                 double average = ((double)cursor.getCount() / (double)Constants.NUMBER_OF_QUESTIONS * 100);
                 Toast.makeText(getApplicationContext(), "Test average on " + date + " is: " + (int) average, Toast.LENGTH_SHORT).show();
             }
-        });
+        });*/
 
-        Button buttonResult = (Button) findViewById(R.id.buttonResult);
-        buttonResult.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showQuestionDialog();
-            }
-        });
+
     }
 
     @Override
@@ -111,7 +103,7 @@ public class PatientActivity extends AppCompatActivity {
 
         String dbTestCreate = "CREATE TABLE IF NOT EXISTS " + table + " ("
                 + Constants._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-                + Constants.COLUMN_ANSWER + " INTEGER NOT NULL);";
+                + Constants.COLUMN_ANSWER_ONE + " INTEGER NOT NULL);";
 
         dbHelper = new PatientDbHelper(this, dbTestCreate, table);
         db = dbHelper.getWritableDatabase();
@@ -122,7 +114,7 @@ public class PatientActivity extends AppCompatActivity {
     private void initQuery(final int question) {
         ContentValues values = new ContentValues();
         values.put(Constants._ID, question);
-        values.put(Constants.COLUMN_ANSWER, 0);
+        values.put(Constants.COLUMN_ANSWER_ONE, 0);
         db.insertOrThrow(table, null, values);
     }
 
@@ -130,7 +122,7 @@ public class PatientActivity extends AppCompatActivity {
     private void updateQuery(final int question, final int answer) {
         ContentValues values = new ContentValues();
         values.put(Constants._ID, question);
-        values.put(Constants.COLUMN_ANSWER, answer);
+        values.put(Constants.COLUMN_ANSWER_ONE, answer);
         db.insertWithOnConflict(table, null, values, SQLiteDatabase.CONFLICT_REPLACE);
     }
 
@@ -228,7 +220,7 @@ public class PatientActivity extends AppCompatActivity {
 
     //get array of answers from sql
     private Integer[] getAnswers() {
-        Cursor cursor = getEvents(table, Constants.COLUMN_ANSWER + " = " + String.valueOf(1));
+        Cursor cursor = getEvents(table, Constants.COLUMN_ANSWER_ONE + " = " + String.valueOf(1));
         Integer[] arr = new Integer[cursor.getCount()];
         int i = 0;
         while (cursor.moveToNext()) {

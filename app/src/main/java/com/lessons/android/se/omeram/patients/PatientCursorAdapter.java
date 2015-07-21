@@ -28,10 +28,16 @@ public class PatientCursorAdapter extends CursorAdapter{
 
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
-        TextView patientId = (TextView) view.findViewById(R.id.patientId);
+        TextView patientId = (TextView) view.findViewById(R.id.testId);
         TextView patientName = (TextView) view.findViewById(R.id.patientName);
+        TextView patientAge = (TextView) view.findViewById(R.id.testDate);
+        TextView patientWeight = (TextView) view.findViewById(R.id.patientWeight);
+        TextView patientHeight = (TextView) view.findViewById(R.id.patientHeight);
 
         patientId.setText(cursor.getString(0));
         patientName.setText(cursor.getString(1));
+        patientAge.setText("Age: " + cursor.getString(2));
+        patientWeight.setText("Weight: " + cursor.getString(3));
+        patientHeight.setText("Height: " + cursor.getString(4));
     }
 }

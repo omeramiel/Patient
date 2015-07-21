@@ -9,9 +9,9 @@
         android:layout_height="wrap_content"
         android:inputType="numberSigned"
         android:ems="10"
-        android:id="@+id/patientId"
+        android:id="@+id/testId"
         android:hint="ID"
-        android:textColorHint="#ffa6e1d7" />
+        android:textColorHint="#FFEEFFFA" />
 
     <EditText
         android:layout_width="match_parent"
@@ -20,6 +20,63 @@
         android:ems="10"
         android:id="@+id/patientName"
         android:hint="Name"
-        android:textColorHint="#ffa6e1d7" />
+        android:textColorHint="#ffeefffa" />
+
+    <RelativeLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Age:"
+            android:id="@+id/textViewAge" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Weight (Kg):"
+            android:id="@+id/textViewWeight"
+            android:layout_alignParentTop="true"
+            android:layout_alignLeft="@+id/patientWeight"
+            android:layout_alignStart="@+id/patientWeight" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Height (Cm):"
+            android:id="@+id/textViewHeight"
+            android:layout_alignParentTop="true"
+            android:layout_alignRight="@+id/patientHeight"
+            android:layout_alignEnd="@+id/patientHeight" />
+
+        <NumberPicker
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/testDate"
+            android:orientation="vertical"
+            android:layout_below="@+id/textViewAge"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" />
+
+        <NumberPicker
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/patientHeight"
+            android:orientation="vertical"
+            android:layout_below="@+id/textViewHeight"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true" />
+
+        <NumberPicker
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/patientWeight"
+            android:orientation="vertical"
+            android:layout_alignTop="@+id/patientHeight"
+            android:layout_centerHorizontal="true" />
+
+    </RelativeLayout>
 
 </LinearLayout>
