@@ -4,7 +4,6 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.ValueDependentColor;
@@ -15,18 +14,13 @@ import com.jjoe64.graphview.series.DataPoint;
 import java.util.ArrayList;
 import java.util.Date;
 
-/**
- * Created by omera_000 on 21/07/2015.
- */
+//This class display the patient tests grades graph on each date
 public class GraphActivity extends AppCompatActivity {
 
-    private static String TAG = GraphActivity.class.getSimpleName();
-
-    ArrayList<String> years = new ArrayList<String>();
-    ArrayList<String> months = new ArrayList<String>();
-    ArrayList<String> days = new ArrayList<String>();
-    ArrayList<String> grades = new ArrayList<String>();
-
+    private ArrayList<String> years = new ArrayList<>();
+    private ArrayList<String> months = new ArrayList<>();
+    private ArrayList<String> days = new ArrayList<>();
+    private ArrayList<String> grades = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,12 +33,11 @@ public class GraphActivity extends AppCompatActivity {
 
         GraphView graph = (GraphView) findViewById(R.id.graph);
 
+        //Receive the data to show on the graph
         years = getIntent().getStringArrayListExtra(Constants.COLUMN_YEAR);
         months = getIntent().getStringArrayListExtra(Constants.COLUMN_MONTH);
         days = getIntent().getStringArrayListExtra(Constants.COLUMN_DAY);
         grades = getIntent().getStringArrayListExtra(Constants.COLUMN_GRADE);
-
-        Log.e(TAG, "years.size(): " + years.size());
 
         DataPoint[] dataPoints = new DataPoint[years.size()];
 
@@ -54,9 +47,6 @@ public class GraphActivity extends AppCompatActivity {
                     Integer.parseInt(months.get(i)),
                     Integer.parseInt(days.get(i))),
                     Double.parseDouble(grades.get(i)));
-
-            Log.e(TAG, "grades: " + grades.get(i) + "days: " + days.get(i));
-            Log.e(TAG, "dataPoint: " + dataPoint.toString());
             dataPoints[i] = dataPoint;
         }
 
@@ -81,8 +71,6 @@ public class GraphActivity extends AppCompatActivity {
                 return Color.rgb((int) data.getX() * 255 / 4, (int) Math.abs(data.getY() * 255 / 6), 100);
             }
         });
-
-
 
         //series.setSpacing(50);
 

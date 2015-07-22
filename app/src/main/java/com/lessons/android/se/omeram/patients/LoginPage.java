@@ -2,19 +2,15 @@ package com.lessons.android.se.omeram.patients;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
 
-
+//Login page for users(Doctors) with permissions to access the app through JDBC
 public class LoginPage extends Activity {
-    private EditText userNameET,passwordET;
-    private SweetAlertDialog wrongPasswordDialog;
-    private UsersBL usersBL;
 
+    private EditText userNameET,passwordET;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,53 +20,20 @@ public class LoginPage extends Activity {
         passwordET=(EditText)findViewById(R.id.passwordET);
     }
 
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_login_page, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    public void loginClicked(View view)
-    {
+    public void loginClicked(View view) {
         String userNameFromET = userNameET.getText().toString();
         String userPasswordFromET = passwordET.getText().toString();
-        if(userNameFromET.equals("")
-                || userPasswordFromET.equals(""))
-        {
+        if(userNameFromET.equals("") || userPasswordFromET.equals("")) {
             wrongPasswordAlertInit(getString(R.string.InputMessage));
-
-        }
-        else
-        {
+        } else {
             int userPassword = Integer.parseInt(passwordET.getText().toString());
-
-
-            usersBL = new UsersBL();
+            UsersBL usersBL = new UsersBL();
             usersBL.getBusinessID(this, this, userPassword, userNameFromET);
         }
-
     }
 
-    private void wrongPasswordAlertInit(String message)
-    {
-        wrongPasswordDialog=new SweetAlertDialog(this, SweetAlertDialog.ERROR_TYPE);
+    private void wrongPasswordAlertInit(String message) {
+        SweetAlertDialog wrongPasswordDialog = new SweetAlertDialog(this, SweetAlertDialog.ERROR_TYPE);
         wrongPasswordDialog.setTitleText(getString(R.string.connectionProblem));
         wrongPasswordDialog.setContentText(message);
         wrongPasswordDialog.setCancelable(true);

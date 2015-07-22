@@ -35,10 +35,9 @@ import java.io.InputStream;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static String TAG = MainActivity.class.getSimpleName();
-    // Lior Sync
+
     // Database creation sql statement
-    private static final String DATABASE_PATIENT_CREATE = "CREATE TABLE IF NOT EXISTS " + Constants.TABLE_PATIENTS + " ("
+    private final String DATABASE_PATIENT_CREATE = "CREATE TABLE IF NOT EXISTS " + Constants.TABLE_PATIENTS + " ("
             + Constants._ID + " INTEGER PRIMARY KEY, "
             + Constants.COLUMN_NAME + " TEXT NOT NULL, "
             + Constants.COLUMN_AGE + " INTEGER NOT NULL, "
@@ -46,9 +45,11 @@ public class MainActivity extends AppCompatActivity {
             + Constants.COLUMN_HEIGHT + " INTEGER NOT NULL"
             + ");";
 
+    private final String[] FROM = {Constants._ID, Constants.COLUMN_NAME, Constants.COLUMN_AGE, Constants.COLUMN_WEIGHT, Constants.COLUMN_HEIGHT};
+    private final String ORDER_BY = Constants._ID + " ASC";
+
+    //Sqlite db instance
     private PatientDbHelper dbHelper;
-    private static String[] FROM = {Constants._ID, Constants.COLUMN_NAME, Constants.COLUMN_AGE, Constants.COLUMN_WEIGHT, Constants.COLUMN_HEIGHT};
-    private static String ORDER_BY = Constants._ID + " ASC";
     private SQLiteDatabase db;
 
     private MenuItem menuItem;
@@ -84,7 +85,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    //display the list of patients
+    //Display the list of patients
     private void showEvents() {
         dbHelper = new PatientDbHelper(this, DATABASE_PATIENT_CREATE, Constants.TABLE_PATIENTS);
         ListView listView = (ListView) findViewById(R.id.patientList);
@@ -135,18 +136,13 @@ public class MainActivity extends AppCompatActivity {
 
                     }
                 });
-
                 return true;
             }
         });
 
     }
 
-    private void removeQuery(String id) {
-        SQLiteDatabase db = dbHelper.getWritableDatabase();
-        db.execSQL("DELETE FROM " + Constants.TABLE_PATIENTS + " WHERE " + Constants._ID + "='" + id + "'");
-    }
-
+    //Popup the remove button after long press on an item in the patient list
     private void updateView() {
         if (!longPressed) {
             fabRemove.setVisibility(View.VISIBLE);
@@ -154,26 +150,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    //insert new patient to db
-    private void insertQuery(String id, String name, int age, int weight, int height) {
-        if (!id.isEmpty() && !name.isEmpty()) {
-            SQLiteDatabase db = dbHelper.getWritableDatabase();
-            ContentValues values = new ContentValues();
-            values.put(Constants._ID, id);
-            values.put(Constants.COLUMN_NAME, name);
-            values.put(Constants.COLUMN_AGE, age);
-            values.put(Constants.COLUMN_WEIGHT, weight);
-            values.put(Constants.COLUMN_HEIGHT, height);
-            db.insertWithOnConflict(Constants.TABLE_PATIENTS, null, values, SQLiteDatabase.CONFLICT_REPLACE);
-        }
-    }
-
-    //get patient table cursor
-    private Cursor getEvents() {
-        return db.query(Constants.TABLE_PATIENTS, FROM, null, null, null, null, ORDER_BY);
-    }
-
-    //add a patient dialog
+    //Add a patient dialog
     private void showInputDialog() {
         MaterialDialog dialog = new MaterialDialog.Builder(this)
                 .title(R.string.dialog_title)
@@ -181,7 +158,7 @@ public class MainActivity extends AppCompatActivity {
                 .positiveText(R.string.add)
                 .negativeText(android.R.string.cancel)
                 .callback(new MaterialDialog.ButtonCallback() {
-                    
+
                     @Override
                     public void onPositive(MaterialDialog dialog) {
                         insertQuery(idInput.getText().toString(),
@@ -198,7 +175,7 @@ public class MainActivity extends AppCompatActivity {
                     public void onNegative(MaterialDialog dialog) {
                     }
                 }).build();
-        
+
         idInput = (EditText) dialog.getCustomView().findViewById(R.id.testId);
         nameInput = (EditText) dialog.getCustomView().findViewById(R.id.patientName);
         ageInput = (NumberPicker) dialog.getCustomView().findViewById(R.id.testDate);
@@ -245,13 +222,36 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-
-
         dialog.show();
     }
 
+    //Remove the given patient from db
+    private void removeQuery(String id) {
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        db.execSQL("DELETE FROM " + Constants.TABLE_PATIENTS + " WHERE " + Constants._ID + "='" + id + "'");
+    }
+
+    //insert new patient to db
+    private void insertQuery(String id, String name, int age, int weight, int height) {
+        if (!id.isEmpty() && !name.isEmpty()) {
+            SQLiteDatabase db = dbHelper.getWritableDatabase();
+            ContentValues values = new ContentValues();
+            values.put(Constants._ID, id);
+            values.put(Constants.COLUMN_NAME, name);
+            values.put(Constants.COLUMN_AGE, age);
+            values.put(Constants.COLUMN_WEIGHT, weight);
+            values.put(Constants.COLUMN_HEIGHT, height);
+            db.insertWithOnConflict(Constants.TABLE_PATIENTS, null, values, SQLiteDatabase.CONFLICT_REPLACE);
+        }
+    }
+
+    //get patients table cursor
+    private Cursor getEvents() {
+        return db.query(Constants.TABLE_PATIENTS, FROM, null, null, null, null, ORDER_BY);
+    }
+
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         InputStream stream = null;
         if (requestCode == REQUEST_CODE && resultCode == Activity.RESULT_OK)
             try {
@@ -274,37 +274,6 @@ public class MainActivity extends AppCompatActivity {
                     }
              }
 
-    }
-
-
-
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-        switch (id) {
-
-            case R.id.action_search:
-                handleMenuSearch();
-                return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        menuItem = menu.findItem(R.id.action_search);
-        return super.onPrepareOptionsMenu(menu);
     }
 
     /**
@@ -373,6 +342,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    //Search a substring in patient table (id or name)
     private void doSearch(String search) {
         Cursor cursor = db.rawQuery("SELECT * FROM " + Constants.TABLE_PATIENTS
                 + " WHERE TRIM(" + Constants._ID + ") LIKE '%" + search.trim()
@@ -380,7 +350,35 @@ public class MainActivity extends AppCompatActivity {
         cursor.moveToFirst();
         patientCursorAdapter.changeCursor(cursor);
         patientCursorAdapter.notifyDataSetChanged();
-      }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+        switch (id) {
+
+            case R.id.action_search:
+                handleMenuSearch();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        menuItem = menu.findItem(R.id.action_search);
+        return super.onPrepareOptionsMenu(menu);
+    }
 
     @Override
     public void onBackPressed() {
@@ -409,7 +407,5 @@ public class MainActivity extends AppCompatActivity {
         if (dbHelper != null)
             dbHelper.closeDB();
     }
-
-
 
 }

@@ -6,16 +6,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CursorAdapter;
-import android.widget.ImageView;
 import android.widget.TextView;
 
-/**
- * Created by omera_000 on 11/06/2015.
- */
+//This class adapt between the sqlite table (Patient) and the patient listView in MainActivity
 public class PatientCursorAdapter extends CursorAdapter{
 
     private LayoutInflater layoutInflater;
-
 
     public PatientCursorAdapter(Context context, Cursor c) {
         super(context, c);
@@ -34,7 +30,7 @@ public class PatientCursorAdapter extends CursorAdapter{
         TextView patientAge = (TextView) view.findViewById(R.id.testDate);
         TextView patientWeight = (TextView) view.findViewById(R.id.patientWeight);
         TextView patientHeight = (TextView) view.findViewById(R.id.patientHeight);
-        ImageView patientPicture = (ImageView) view.findViewById(R.id.imageViewPatient);
+        //ImageView patientPicture = (ImageView) view.findViewById(R.id.imageViewPatient);
 
         patientId.setText(cursor.getString(0));
         patientName.setText(cursor.getString(1));

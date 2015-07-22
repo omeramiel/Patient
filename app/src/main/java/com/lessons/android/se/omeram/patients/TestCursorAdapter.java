@@ -8,9 +8,7 @@ import android.view.ViewGroup;
 import android.widget.CursorAdapter;
 import android.widget.TextView;
 
-/**
- * Created by omera_000 on 20/07/2015.
- */
+//This class adapt between the sqlite table (patient test) and the test listView in PatientActivity2
 public class TestCursorAdapter extends CursorAdapter {
 
     private LayoutInflater layoutInflater;

@@ -4,18 +4,12 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-/**
- * Created by omera_000 on 11/06/2015.
- */
 public class PatientDbHelper extends SQLiteOpenHelper {
-
-    private static String TAG = PatientDbHelper.class.getSimpleName();
 
     private static final String DATABASE_NAME = "patient.db";
     private static final int DATABASE_VERSION = 1;
     private String mDbCreate;
     private String mTable;
-
 
     public PatientDbHelper(Context context, String dbCreate, String table) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
